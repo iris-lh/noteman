@@ -1,0 +1,160 @@
+#!/bin/bash
+
+
+
+
+VERSION='\n\n Noteman v1.1'
+
+DESCRIPTION="
+\n Noteman is a script designed to help you keep\n
+your project notes organized. Simply navigate to a project's\n
+root folder and run the script, and noteman will take care of\n 
+the rest. Have fun! :)\n
+"
+
+USAGE='\n Usage: noteman [options]\n'
+
+OPTION_LIST='
+\n -h | Display this message
+\n -c | Disable colorful output
+\n -q | Run in quiet mode
+\n -v | Run in verbose mode
+\n -o | Open ~/notes in your editor
+'
+
+
+
+PROJ_NAME=`basename "$PWD"`
+PROJ_NOTES_DIR="$PWD/notes"
+HOME_NOTES_DIR="/home/$USER/notes"
+TICK_CHAR='o'
+
+
+
+COLORS_ALLOWED=true
+declare VERBOSITY=1
+
+while getopts 'hcqvo' opt ; do
+	case $opt in
+		h) echo -e $DESCRIPTION $USAGE $OPTION_LIST $VERSION; exit ;;
+		c) COLORS_ALLOWED=false ;;
+		q) declare VERBOSITY=0 ;;
+		v) declare VERBOSITY=2 ;;
+		o) $EDITOR /home/$USER/notes; exit ;;
+
+		[?]) echo -e $USAGE $OPTION_LIST; exit ;;
+	esac
+done
+
+
+
+NC='\033[0m' # no color
+
+if $COLORS_ALLOWED; then
+	if [ $VERBOSITY == 2 ]; then
+		BLUE='\033[0;34m'
+		AQUA='\033[1;36m'
+		GREEN='\033[0;32m'
+		YELLOW='\033[0;33m'
+		RED='\033[0;31m'
+	else
+		BLUE='\033[1;34m'
+		AQUA='\033[1;36m'
+		GREEN='\033[1;32m'
+		YELLOW='\033[1;33m'
+		RED='\033[1;31m'
+	fi
+else
+	BLUE=$NC
+	AQUA=$NC
+	GREEN=$NC
+	YELLOW=$NC
+	RED=$NC
+fi
+
+
+
+say () {
+	if [ $VERBOSITY == 2 ]; then
+		echo -e "$1"
+	elif [ $VERBOSITY == 1 ]; then
+		printf "$2"
+		
+	fi
+}
+
+
+
+# HANDLES HOME'S NOTES FOLDER
+check_home_notes_dir () {
+	say ""
+	say ">>> ${YELLOW}CHECKING for '$HOME_NOTES_DIR'...${NC}" "${YELLOW}$TICK_CHAR${NC}"
+
+	if [ -d $HOME_NOTES_DIR ]; then
+		say ">>> ${GREEN}FOUND '$HOME_NOTES_DIR'.${NC}" "${GREEN}$TICK_CHAR${NC}"
+
+	else
+		say ">>> ${RED}DIDN'T FIND '$HOME_NOTES_DIR', ${BLUE}creating it now.${NC}" "${RED}$TICK_CHAR${NC}${BLUE}$TICK_CHAR${NC}"
+
+		if [ $VERBOSITY == 2 ]; then
+			printf ">>> "
+			mkdir -v $HOME_NOTES_DIR
+			printf "${NC}"
+		else
+			mkdir $HOME_NOTES_DIR
+		fi
+	fi
+}
+
+
+# HANDLES PROJECT'S NOTES FOLDER
+check_proj_notes_dir () {
+	say "" 
+	say ">>> ${YELLOW}CHECKING for '$PROJ_NOTES_DIR'...${NC}" "${YELLOW}$TICK_CHAR${NC}"
+
+	if [ -d $PROJ_NOTES_DIR ]; then
+		say ">>> ${GREEN}FOUND '$PROJ_NOTES_DIR'.${NC}" "${GREEN}$TICK_CHAR${NC}"
+
+	else
+		say ">>> ${RED}DIDN'T FIND '$PROJ_NOTES_DIR', ${BLUE}creating it now.${NC}" "${RED}$TICK_CHAR${NC}${BLUE}$TICK_CHAR${NC}"
+
+		if [ $VERBOSITY == 2 ]; then
+			printf ">>> "
+			mkdir -v $PROJ_NOTES_DIR 
+			printf "${NC}"
+		else 
+			mkdir $PROJ_NOTES_DIR
+		fi
+	fi
+}
+
+
+# HANDLES SYM LINK TO HOME'S NOTES FOLDER
+check_sym_link () {
+	say ""
+	say ">>> ${YELLOW}CHECKING for symlink at '$HOME_NOTES_DIR/$PROJ_NAME'...${NC}" "${YELLOW}$TICK_CHAR${NC}"
+
+	if [ -d $HOME_NOTES_DIR/$PROJ_NAME ]; then
+		say ">>> ${GREEN}FOUND symlink at '$HOME_NOTES_DIR/$PROJ_NAME'.${NC}" "${GREEN}$TICK_CHAR${NC}"
+
+	else
+		say ">>> ${RED}DIDN'T FIND symlink at '$HOME_NOTES_DIR/$PROJ_NAME', ${BLUE}creating it now.${NC}" "${RED}$TICK_CHAR${NC}${BLUE}$TICK_CHAR${NC}"
+
+		if [ $VERBOSITY == 2 ]; then
+			printf ">>> ln: "
+			ln -sv $PROJ_NOTES_DIR $HOME_NOTES_DIR/$PROJ_NAME
+			printf "${NC}"
+		else 
+			ln -s $PROJ_NOTES_DIR $HOME_NOTES_DIR/$PROJ_NAME
+		fi
+	fi
+}
+
+
+
+check_home_notes_dir
+check_proj_notes_dir
+check_sym_link
+
+say ""
+say ">>> ${AQUA}All done! :)${NC}" "${AQUA} Done! :)${NC}"
