@@ -1,4 +1,4 @@
-# noteman
+# NoteMan
 
  NoteMan is a script designed to help you keep
  your project notes organized. Simply navigate to a project's
