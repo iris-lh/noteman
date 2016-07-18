@@ -1,6 +1,6 @@
 # noteman
 
- Noteman is a script designed to help you keep
+ NoteMan is a script designed to help you keep
  your project notes organized. Simply navigate to a project's
  root folder and run the script, and noteman will take care of
  the rest. Have fun! :)
@@ -13,4 +13,4 @@
  -v | Run in verbose mode 
  -o | Open ~/notes in your editor 
 
- Noteman v1.1
+ NoteMan v1.1
