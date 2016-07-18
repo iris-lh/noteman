@@ -1,9 +1,9 @@
 #!/bin/bash
 
-VERSION='\n\n Noteman v1.1'
+VERSION='\n\n NoteMan v1.1'
 
 DESCRIPTION="
-\n Noteman is a script designed to help you keep\n
+\n NoteMan is a script designed to help you keep\n
 your project notes organized. Simply navigate to a project's\n
 root folder and run the script, and noteman will take care of\n 
 the rest. Have fun! :)\n
