@@ -1,8 +1,5 @@
 #!/bin/bash
 
-
-
-
 VERSION='\n\n Noteman v1.1'
 
 DESCRIPTION="
@@ -107,6 +104,7 @@ check_home_notes_dir () {
 }
 
 
+
 # HANDLES PROJECT'S NOTES FOLDER
 check_proj_notes_dir () {
 	say "" 
@@ -127,6 +125,7 @@ check_proj_notes_dir () {
 		fi
 	fi
 }
+
 
 
 # HANDLES SYM LINK TO HOME'S NOTES FOLDER
