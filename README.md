@@ -13,4 +13,4 @@
  -v | Run in verbose mode 
  -o | Open ~/notes in your editor 
 
- NoteMan v1.1
+ NoteMan v1.1 
