@@ -1,4 +1,4 @@
-# NoteMan
+# NoteMan v1.1
 
  NoteMan is a script designed to help you keep
  your project notes organized. Simply navigate to a project's
@@ -16,5 +16,3 @@
  -v | Run in verbose mode 
  
  -o | Open ~/notes in your editor 
-
- NoteMan v1.1 
