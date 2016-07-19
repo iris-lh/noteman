@@ -1,0 +1,223 @@
+#!/bin/bash
+
+# Line 1 tells the computer what language to run this with
+# so that we don't have to add '.sh' to the file name,
+# and we wont have to say 'sh noteman.sh' to run it.
+# we can just say './noteman' 
+# (or even just 'noteman' if this file is added to your path)
+
+# Bits of text that the program can display
+
+VERSION='\n\n NoteMan v1.1'
+
+DESCRIPTION="
+\n NoteMan is a script designed to help you keep\n
+your project notes organized. Simply navigate to a project's\n
+root folder and run the script, and noteman will take care of\n 
+the rest. Have fun! :)\n
+"
+
+USAGE='\n Usage: noteman [options]\n'
+
+OPTION_LIST='
+\n -h | Display this message
+\n -c | Disable colorful output
+\n -q | Run in quiet mode
+\n -v | Run in verbose mode
+\n -o | Open ~/notes in your editor
+'
+
+
+
+PROJ_NAME=`basename "$PWD"`
+PROJ_NOTES_DIR="$PWD/notes"
+HOME_NOTES_DIR="/home/$USER/notes"
+TICK_CHAR='o'
+
+
+
+COLORS_ALLOWED=true
+declare VERBOSITY=1 # you say 'declare' when declaring a int. you don't need it for bools and strings though		<-
+
+
+
+# this part handles the options, your -h, -c, -q, etc. 																<-
+# for instance you could say 'noteman -vc' to run noteman with verbose(wordy) output and no colors 					
+while getopts 'hcqvo' opt ; do
+	case $opt in
+		h) echo -e $DESCRIPTION $USAGE $OPTION_LIST $VERSION; exit ;;
+		c) COLORS_ALLOWED=false ;;
+		q) declare VERBOSITY=0 ;;
+		v) declare VERBOSITY=2 ;;
+		o) $EDITOR /home/$USER/notes; exit ;;
+
+		[?]) echo -e $USAGE $OPTION_LIST; exit ;;
+	esac
+done
+
+
+
+# These are ANSI color codes																						<-
+# Basically you stick them in a string to get colors when you output that string 									
+
+NC='\033[0m' # no color 																							<-
+
+if $COLORS_ALLOWED; then
+	if [ $VERBOSITY == 2 ]; then
+		BLUE='\033[0;34m'
+		AQUA='\033[1;36m'
+		GREEN='\033[0;32m'
+		YELLOW='\033[0;33m'
+		RED='\033[0;31m'
+	else
+		BLUE='\033[1;34m'
+		AQUA='\033[1;36m'
+		GREEN='\033[1;32m'
+		YELLOW='\033[1;33m'
+		RED='\033[1;31m'
+	fi
+else
+	BLUE=$NC
+	AQUA=$NC
+	GREEN=$NC
+	YELLOW=$NC
+	RED=$NC
+fi
+
+
+
+# Below is a function that allows me to determine what to say in the terminal 										<-
+# depending on the VERBOSITY variable. 2 is wordy output, 1 is just a little 										
+# single line output, and 0 is completely silent. 																	
+
+# Also note the structure of the if/elif blocks 																	<-
+
+say () {
+	if [ $VERBOSITY == 2 ]; then
+		echo -e "$1"
+	elif [ $VERBOSITY == 1 ]; then
+		printf "$2"
+		
+	fi
+}
+
+
+
+# The following three functions are the muscle of the script. 														<-
+# They check for the existance of certain folders and if the
+# folder does not exist, it creates it. It also contains the
+# feedback text that is displayed in the terminal
+
+# HANDLES HOME'S NOTES FOLDER 																						<-
+check_home_notes_dir () {
+	say ""		# used when VERBOSITY=2							#used when VERBOSITY=1 (which is the default) 		<-
+	say ">>> ${YELLOW}CHECKING for '$HOME_NOTES_DIR'...${NC}" "${YELLOW}$TICK_CHAR${NC}"
+
+	# checks if there is a 'notes' folder in your home directory 													<-
+	if [ -d $HOME_NOTES_DIR ]; then
+		say ">>> ${GREEN}FOUND '$HOME_NOTES_DIR'.${NC}" "${GREEN}$TICK_CHAR${NC}"
+
+	else
+		say ">>> ${RED}DIDN'T FIND '$HOME_NOTES_DIR', ${BLUE}creating it now.${NC}" "${RED}$TICK_CHAR${NC}${BLUE}$TICK_CHAR${NC}"
+
+		if [ $VERBOSITY == 2 ]; then
+			printf ">>> "				# here we're actually incorporating mkdir's verbose 						<-
+			mkdir -v $HOME_NOTES_DIR 	# output into noteman's output. Cool, yeah? 
+			printf "${NC}"
+		else
+			mkdir $HOME_NOTES_DIR
+		fi
+	fi
+}
+
+
+
+# HANDLES PROJECT'S NOTES FOLDER 																					<-
+check_proj_notes_dir () {
+	say "" 
+	say ">>> ${YELLOW}CHECKING for '$PROJ_NOTES_DIR'...${NC}" "${YELLOW}$TICK_CHAR${NC}"
+
+	# checks if there is a 'notes' folder in your current directory 												<-
+	if [ -d $PROJ_NOTES_DIR ]; then
+		say ">>> ${GREEN}FOUND '$PROJ_NOTES_DIR'.${NC}" "${GREEN}$TICK_CHAR${NC}"
+
+	else
+		say ">>> ${RED}DIDN'T FIND '$PROJ_NOTES_DIR', ${BLUE}creating it now.${NC}" "${RED}$TICK_CHAR${NC}${BLUE}$TICK_CHAR${NC}"
+
+		if [ $VERBOSITY == 2 ]; then
+			printf ">>> "
+			mkdir -v $PROJ_NOTES_DIR 
+			printf "${NC}"
+		else 
+			mkdir $PROJ_NOTES_DIR
+		fi
+	fi
+}
+
+
+
+# This function is what actually makes noteman useful. 																<-
+# After noteman checks for '~/notes' and '~/coding/language/<project_name>/notes',
+# It will then make a link that points from '~/notes' to '.../<project_name>/notes'.
+
+# HANDLES SYM LINK TO HOME'S NOTES FOLDER 																			<-
+check_sym_link () {
+	say ""
+	say ">>> ${YELLOW}CHECKING for symlink at '$HOME_NOTES_DIR/$PROJ_NAME'...${NC}" "${YELLOW}$TICK_CHAR${NC}"
+
+	if [ -d $HOME_NOTES_DIR/$PROJ_NAME ]; then
+		say ">>> ${GREEN}FOUND symlink at '$HOME_NOTES_DIR/$PROJ_NAME'.${NC}" "${GREEN}$TICK_CHAR${NC}"
+
+	else
+		say ">>> ${RED}DIDN'T FIND symlink at '$HOME_NOTES_DIR/$PROJ_NAME', ${BLUE}creating it now.${NC}" "${RED}$TICK_CHAR${NC}${BLUE}$TICK_CHAR${NC}"
+
+		if [ $VERBOSITY == 2 ]; then
+			printf ">>> ln: "
+			ln -sv $PROJ_NOTES_DIR $HOME_NOTES_DIR/$PROJ_NAME
+			printf "${NC}"
+		else 
+			ln -s $PROJ_NOTES_DIR $HOME_NOTES_DIR/$PROJ_NAME
+		fi
+	fi
+}
+
+
+
+check_home_notes_dir
+check_proj_notes_dir
+check_sym_link
+
+say ""
+say ">>> ${AQUA}All done! :)${NC}" "${AQUA} Done! :)${NC}"
+
+
+
+# So lets say we have a new project called 'spelling_bee' and we've never used NoteMan before. 						<-
+# We cd'd into the root of our project folder and said 'noteman -v'.
+# Assuming the project folder is blank, noteman would then run and say...
+#  ________________________________________________________________________________________________
+# |
+# |you@host:~/coding/language/spelling_bee/$ noteman -v
+# |
+# |>>> CHECKING for '/home/you/notes'...
+# |>>> DIDN'T FIND '/home/you/notes', creating it now.
+# |>>> mkdir: created directory '/home/you/notes'
+# |
+# |>>> CHECKING for '/home/you/coding/language/spelling_bee/notes'...
+# |>>> DIDN'T FIND '/home/you/coding/language/spelling_bee/notes', creating it now.
+# |>>> mkdir: created directory '/home/you/coding/language/spelling_bee/notes'
+# |
+# |>>> CHECKING for symlink at '/home/you/notes/spelling_bee'...
+# |>>> DIDN'T FIND symlink at '/home/you/notes/spelling_bee', creating it now.
+# |>>> ln: '/home/you/notes/spelling_bee' -> '/home/you/coding/language/spelling_bee/notes'
+# |
+# |>>> All done! :)
+# |
+# |you@host:~/coding/language/spelling_bee/$
+# |________________________________________________________________________________________________
+#
+# So now when we go to ~/notes, we'll see that we now have a folder called 'spelling_bee'.
+# And when we cd into '~/notes/spelling_bee', guess where we are?
+# That's right, '.../spelling_bee/notes'.
+#
+# It's like a wormhole to the brainstorming galaxy. :)

@@ -1,0 +1,26 @@
+NoteMan is ultimately a tool for streamlining the brainstorming process.
+At this time, it is primarily designed for my own use/needs, but i'm 
+definitely interested in seeing what other people think about it. 
+It would be nifty if NoteMan was something other programmers might want to use.
+
+
+
+Current features:
+
+	creates a way to easily get to all your project notes quickly/easily without 
+	having to have a zillion duplicates of your notes
+
+	To that end, it:
+
+		looks for a 'notes' folder in your home directory. if none exists, it makes one.
+
+		looks for a 'notes' folder in your current dir. If none exists, it makes one.
+
+		looks for a sym-link in ~/notes (~/notes/<project_name>) that points to ~/coding/language/project/notes 
+		(or what have you). If none exists, it makes one.
+
+	This makes it so that you can simultaneously have all your notes in one place (as a nice little aggregated collection in ~/notes) and also have the text files actually truly live inside the project dir, so that they can be part of your git/hg repo and changes to your notes can be committed.
+
+Future features:
+
+	
