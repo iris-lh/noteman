@@ -23,4 +23,8 @@ Current features:
 
 Future features:
 
-	
+	Possibly some kind of git integration...
+
+		an option to populate some kind of ~/notes/notes_git folder with actual copies every so often in order to have a bitbucket/github repo of all one's notes in order to prevent loss?
+
+		Needs further pondering. First why and then how.
