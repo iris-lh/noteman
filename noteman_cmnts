@@ -1,12 +1,12 @@
 #!/bin/bash
 
-# Line 1 tells the computer what language to run this with
+# Line 1 tells the computer what language to run this with															<-
 # so that we don't have to add '.sh' to the file name,
 # and we wont have to say 'sh noteman.sh' to run it.
 # we can just say './noteman' 
 # (or even just 'noteman' if this file is added to your path)
 
-# Bits of text that the program can display
+# Below are some bits of text that the program can display 															<-
 
 VERSION='\n\n NoteMan v1.1'
 
