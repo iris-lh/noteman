@@ -8,9 +8,13 @@
  Usage: noteman [options]
  
  -h | Display this message 
+ 
  -c | Disable colorful output 
+ 
  -q | Run in quiet mode 
+ 
  -v | Run in verbose mode 
+ 
  -o | Open ~/notes in your editor 
 
  NoteMan v1.1 
